@@ -1,24 +1,16 @@
-function isMatch(s, p) {
-  const dp = Array.from(Array(s.length + 1), () =>
-    Array(p.length + 1).fill(false),
-  );
-  dp[0][0] = true;
-  for (let i = 1; i <= p.length; i++) {
-    if (p[i - 1] === "*") {
-      dp[0][i] = dp[0][i - 2];
+const radixSort = (arr) => {
+  const getDigit = (num, place) =>
+    Math.floor(Math.abs(num) / Math.pow(10, place)) % 10;
+  const digitCount = (num) =>
+    num === 0 ? 1 : Math.floor(Math.log10(Math.abs(num))) + 1;
+  const mostDigits = (arr) => Math.max(...arr.map((num) => digitCount(num)));
+  const maxDigits = mostDigits(arr);
+  for (let k = 0; k < maxDigits; k++) {
+    let digitBuckets = Array.from({ length: 10 }, () => []);
+    for (let i = 0; i < arr.length; i++) {
+      digitBuckets[getDigit(arr[i], k)].push(arr[i]);
     }
+    arr = [].concat(...digitBuckets);
   }
-  for (let i = 1; i <= s.length; i++) {
-    for (let j = 1; j <= p.length; j++) {
-      if (s[i - 1] === p[j - 1] || p[j - 1] === ".") {
-        dp[i][j] = dp[i - 1][j - 1];
-      } else if (p[j - 1] === "*") {
-        dp[i][j] = dp[i][j - 2];
-        if (p[j - 2] === "." || s[i - 1] === p[j - 2]) {
-          dp[i][j] = dp[i][j] || dp[i - 1][j];
-        }
-      }
-    }
-  }
-  return dp[s.length][p.length];
-}
+  return arr;
+};
